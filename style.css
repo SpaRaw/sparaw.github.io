@@ -3,4 +3,34 @@
 }
 
 *{
+    margin: 0;
+    padding: 0;
+}
+
+div{
+    border: 1px solid;
+}
+
+ul{
+    list-style-type: none;
+}
+
+li{
+    margin-inline: 0.25rem;
+    padding-inline: 0.25rem;
+}
+
+#upper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#bewerbungsPic{
+    height: 10rem;
+}
+
+#nav{
+    display: flex;
+    justify-content: space-around;
 }
