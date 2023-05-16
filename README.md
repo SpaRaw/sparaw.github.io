@@ -1,6 +1,6 @@
 # sparaw.github.io / korbinianmueller.de
 Bewerbungshomepage
-Dieses Repository soll als eine Bewerbungswebseite dienen
+dieses Repository soll als eine Bewerbungswebseite dienen
 
 ## Index
 Die Indexseite ist als Motivationsschreiben gedacht
