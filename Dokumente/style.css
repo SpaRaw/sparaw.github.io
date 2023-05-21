@@ -1,0 +1,11 @@
+:root{
+    --dark:  #005c66;
+    --medium: #008c99;
+    --hellgrün: #00bfb5;
+    --font-color: #ffffff;
+}
+
+*{
+    padding: 0;
+    margin: 0;
+}

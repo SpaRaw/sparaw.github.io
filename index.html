@@ -2,50 +2,129 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Korbinian Müller</title>
-    <link href="style.css" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link href="Dokumente/style.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div id="upper">
-            <div id="img">
-                <img id="bewerbungsPic" src="documents/img/bewerbung.jpg" alt="Bewerbungsfoto">
-            </div>
-            <div id="headline">
+    <div id="page">
+        <div id="content">
+            <header>
+                <h1>Willkommen auf meinem Portfolio</h1>
+            </header>
+
+            <section>
+                <h2>Über mich</h2>
+                <p>
+                    Ich habe meine ersten Programmiererfahrungen auf dem Gymnasium gesammelt. Hier habe ich Java gelernt, Grundlagen und Algorithmen.
+                    Das Programmieren hat mich direkt Fasziniert und nicht mehr losgelassen.
+                </p>
+                <p>
+                    Mit einem Probestudium habe ich realisiert, das Informatik mein Gebiet ist. Jedoch ist mir ebenfalls bewusst geworden, dass ich noch nicht
+                    die nötigen Grundlagen besitze. Dementsprechend habe ich die Ausbildung an der Naturwissenschaftlich-Technischen Akademie Isny begonnen.
+                </p>
+                <p>
+                    Während der Ausbildung ist mit Klargeworden das ich Fullstack mag. Die Kombination aus dem höchst Kreativen bereich der Frontendentwicklung,
+                    kombiniert mit dem sehr Logischen und technischen Backend gefällt mir sehr.
+                </p>
+                <p>
+                    Mein größtes Ziel ist es meine jetzigen Fähigkeiten zu Verbessern und zu dem Besten Software Ingenieur zu werden, der ich sein kann.
+                </p>
+            </section>
+
+            <section>
+                <h2>Projekt</h2>
+                <p>Eine Gesamt übersicht finden sie auf meinem GitHub Account <a href="http://github.com/sparaw">SpaRaw</a></p>
+                <h4>Inst_star</h4>
+                <p>
+                    Das Projekt entstand mit dem Gedanken wie Anspruchsvoll das Automatisieren eines Instagram Account ist.
+                    Dazu soll ein Bot eingesetzt werden.
+                </p>
+                <h5>Projekt Definition</h5>
+                <p>
+                    Unter vollständiger Automation gilt, dass der Bot sich selbstständig auf Instagram einloggt. Nachdem der Bot eingeloggt ist,
+                    soll er mit anderen Nutzern interagieren. Danach soll der Bot bereits bereitgestellten Content hochladen.
+                    Der Content sind Animationen von <a href="https://de.wikipedia.org/wiki/Spirograph_(Spielzeug)">Spirographen</a>.
+                </p>
+                <h5>Umsetzung</h5>
+                <p>
+                    Für die Umsetzung wurde die Programmiersprache Python verwendet. Da diese sehr hilfreichen Funktionen bereitstellt.
+                    Damit die Navigation und Interaktion funktioniert wurde ein Webcrawler mit dem Package Selenium Programiert.
+
+                    Die Strategie dahinter ist, die HTML elemente mittels ihrer XPATH ausfindig zu machen und anschließend mit
+                    Selenium zu interagieren.
+                    Auf diese weise ist es möglich die Aktionen Text eingeben und Button anklicken zu automatisieren.
+
+                    Für die Interaktion likt und followed der bot bis zu fünf verschiedenen Post. Die Posts werden über vordefinierten Hashtags
+                    gefunden. Die Hashtags passen inhaltlich zu dem Content was auf dem Account hochgeladen werden.
+                </p>
+                <h5>Probleme</h5>
+                <p>
+                    Insgesamt sind folgende große Probleme aufgetreten. Diese sind:<br>
+                    <ul>
+                        <li>
+                            Ich habe noch kein Paket entdeckt, mit dem sich die Animation einfach erstellt werden kann.
+                            Um dieses Problem zu lösen wurde eine eigen Rendering scripted. Diese Generiert die Kurzvideos.
+                        </li>
+                        <li>
+                            Dateien können nur mittels eines Drag-and-drop Felds oder einer System eingabe hochgeladen werden. Beide Optionen sind nicht
+                            mittels Webcrawling automatisierbar. Um dies zu lösen wurden Benutzer Eingaben mittels dem Paket Pyautgui simuliert.
+                        </li>
+                        <li>
+                            Instagram ändert in regelmäßigen Abständen die Bezeichnungen ihrer HTML Elemente. Dadurch muss auch der Code ebenfalls angepasst werden.
+                        </li>
+                        <li>
+                            Die Bot erkennung schreitet sehr schnell ein und suspendiert den Account
+                        </li>
+                    </ul>
+                </p>
+            </section>
+
+            <section>
+                <h2>Technische Fähigkeiten</h2>
                 <ul>
-                    <li> <h3> Hallo</h3></li>
-                    <li> <h1><b>ich bin Korbinian!</b></h1></li>
-                    <li> <h3>ich ein angehender Softwareentwickler</h3></li>
-                    <li> <h3>Besuch meine Projekte auf GitHub SpaRaw  <a href="https://github.de/sparaw"><Button>Besuch mich</Button></a></h3></li>
-
+                    <li>Python<br>
+                        <ul>
+                            <li>Python 3.10</li>
+                            <li>Webcrawling</li>
+                            <li>Flask Webapp und API</li>
+                            <li>Numpy</li>
+                            <li>Pandas</li>
+                        </ul>
+                    </li>
+                    <li>C/C++<br>
+                        <ul>
+                            <li>C++ 98</li>
+                            <li>Arduino</li>
+                            <li>Mikroprozessor auch mit Asselbler</li>
+                        </ul>
+                    </li>
+                    <li>Java<br>
+                        <ul>
+                            <li>JavaSE-17</li>
+                            <li>AWT</li>
+                            <li>Swing</li>
+                        </ul>
+                    </li>
+                    <li>HTML5/CSS</li>
+                    <li>Datenbanken<br>
+                        <ul>
+                            <li>SQLite</li>
+                            <li>SQL</li>
+                        </ul>
+                    </li>
                 </ul>
-            </div>
-        </div>
-        <div id="divNav">
-            <ul id="nav">
-                <li> <a href="python.html"> Python </a> </li>
-                <li> <a href="cpp.html"> C / C++</a></li>
-                <li> <a href="java.html"> Java</a></li>
-                <li> <a href="web.html"> Webstack</a></li>
-                <li> <a href="spielplatz.html"> Spielplatz</a></li>
-            </ul>
-        </div>
-    </header>
-    <div>
-        <div>
+            </section>
 
+            <section>
+                <h2>Codebeispiele</h2>
+            </section>
+
+            <footer>
+                <p>Kontaktiere mich unter: <a href="mailto:deine-email@example.com">deine-email@example.com</a></p>
+            </footer>
         </div>
-        <div>
-            <form action="mailto:bewerbung@korbinianmueller.de" method="get" enctype="text/plain">
-                Betreff:<br>
-                <input type="text" name="subject" placeholder="Betreff"><br>
-                Email:<br>
-                <input type="email" name="email" placeholder="email"><br>
-                Message:<br>
-                <textarea name="body" rows="5" cols="30" placeholder="Nachricht"></textarea><br>
-                <input type="submit" value="Abschicken">
-            </form>
+        <div id="navigation">
+
         </div>
     </div>
 </body>
