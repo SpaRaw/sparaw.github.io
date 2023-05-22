@@ -2,8 +2,9 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Portfolio</title>
     <link href="Dokumente/style.css" rel="stylesheet">
+    <meta name="keywords" content="Korbinian, Korbinian Müller, Bewerbung, ">
 </head>
 <body>
     <div id="page">
@@ -12,7 +13,7 @@
                 <h1>Willkommen auf meinem Portfolio</h1>
             </header>
 
-            <section>
+            <section id="me">
                 <h2>Über mich</h2>
                 <p>
                     Ich habe meine ersten Programmiererfahrungen auf dem Gymnasium gesammelt. Hier habe ich Java gelernt, Grundlagen und Algorithmen.
@@ -31,18 +32,20 @@
                 </p>
             </section>
 
-            <section>
+            <section id="projekt">
                 <h2>Projekt</h2>
                 <p>Eine Gesamt übersicht finden sie auf meinem GitHub Account <a href="http://github.com/sparaw">SpaRaw</a></p>
-                <h4>Inst_star</h4>
+                <h5>Inst_star</h5>
                 <p>
-                    Das Projekt entstand mit dem Gedanken wie Anspruchsvoll das Automatisieren eines Instagram Account ist.
+                    Das Projekt entstand mit dem Gedanken wie anspruchsvoll das Automatisieren eines Instagram Account ist.
                     Dazu soll ein Bot eingesetzt werden.
                 </p>
                 <h5>Projekt Definition</h5>
                 <p>
                     Unter vollständiger Automation gilt, dass der Bot sich selbstständig auf Instagram einloggt. Nachdem der Bot eingeloggt ist,
                     soll er mit anderen Nutzern interagieren. Danach soll der Bot bereits bereitgestellten Content hochladen.
+                </p>
+                <p>
                     Der Content sind Animationen von <a href="https://de.wikipedia.org/wiki/Spirograph_(Spielzeug)">Spirographen</a>.
                 </p>
                 <h5>Umsetzung</h5>
@@ -79,10 +82,11 @@
                 </p>
             </section>
 
-            <section>
+            <section id="fähigkeiten">
                 <h2>Technische Fähigkeiten</h2>
                 <ul>
-                    <li>Python<br>
+                    <li class="ele">Python</li>
+                    <li>
                         <ul>
                             <li>Python 3.10</li>
                             <li>Webcrawling</li>
@@ -91,14 +95,16 @@
                             <li>Pandas</li>
                         </ul>
                     </li>
-                    <li>C/C++<br>
+                    <li class="ele">C/C++</li>
+                    <li>
                         <ul>
                             <li>C++ 98</li>
                             <li>Arduino</li>
                             <li>Mikroprozessor auch mit Asselbler</li>
                         </ul>
                     </li>
-                    <li>Java<br>
+                    <li class="ele">Java</li>
+                    <li>
                         <ul>
                             <li>JavaSE-17</li>
                             <li>AWT</li>
@@ -106,7 +112,8 @@
                         </ul>
                     </li>
                     <li>HTML5/CSS</li>
-                    <li>Datenbanken<br>
+                    <li class="ele">Datenbanken</li>
+                    <li>
                         <ul>
                             <li>SQLite</li>
                             <li>SQL</li>
@@ -115,16 +122,124 @@
                 </ul>
             </section>
 
-            <section>
+            <section id="code">
                 <h2>Codebeispiele</h2>
+                <p>
+                    Der folgende Python code ist ein Element von Inst_star. Es wird benutzt um die einzelnen Punkte des Spirografen zu simmulieren.
+                    <div class="code">
+                class Circle:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;def __init__(self, radius, pos_x, pos_y, color):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.RADIUS = radius<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.COLOR = color<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.pos_x = pos_x<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.pos_y = pos_y<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.last_x = self.pos_x<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.last_y = self.pos_y<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.current_pixel = self.calc_adjecent_pixels(self.RADIUS, self.pos_x, self.pos_y)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.last_pixel = self.current_pixel<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;def calc_adjecent_pixels(self, radius, pos_x, pos_y):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# calculate the adjacent Pixels belonging to the circle<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Creates a list with the coordinates of all pixels with a distance of less or equal then the radius<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Calculate with:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# pos_x +- m , posy +- n  -> n = { -radius, . . . , radius}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -> m = r -n<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# pos_x, pos_y describe the center pixel of the circle<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_of_adjacent_pixels = []<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x_diff = 0<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y_diff = 0<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for i in range(pos_y - radius, pos_y + 1):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;y_diff = abs(i - pos_y)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for n in range(pos_x - radius, pos_x + 1):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (math.sqrt((n - pos_x) ** 2 + (i - pos_y) ** 2)) <= radius :<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_of_adjacent_pixels.append((n, i))<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_of_adjacent_pixels.append((n, pos_y + pos_y - i))<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_of_adjacent_pixels.append((pos_x + pos_x - n, i))<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list_of_adjacent_pixels.append((pos_x + pos_x - n, pos_y +pos_y - i))<br>
+                <br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return list_of_adjacent_pixels<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;def move_circle(self, new_x, new_y):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.last_x = self.pos_x<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.last_y = self.pos_y<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.pos_x = new_x<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.pos_y = new_y<br>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.last_pixel = self.current_pixel<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.current_pixel = self.calc_adjecent_pixels(self.RADIUS, self.pos_x, self.pos_y)<br>
+                    </div>
+                </p>
+                <p>
+                    Das folgende Code beispiel, ist die Lösung auf eine in der Ausbildung gestellte, Aufgabe.
+                    Dabei sollte mittels Java und den Modulen Swing und Awt eine Digitaluhr entwickelt werden.<br>
+                    <img id="clock" src="Dokumente/clock.jpg" alt="Digital Uhr, Oben mit NTA-logo, Unten die Uhrzeit in ">
+                    <div class="code">
+                import javax.swing.*;<br>
+                import java.awt.*;<br>
+                import java.util.Calendar;<br>
+                import java.util.Random;<br>
+                public class clock {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;private int h, m, s;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;private JLabel l = new JLabel("",SwingConstants.CENTER);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;private JFrame frame = new JFrame("Clock1");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;private Random r = new Random();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;public clock() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.setSize(350, 400);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.setVisible(true);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.setFont(new Font("sansserif",Font.PLAIN, 48));<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ImageIcon img = new ImageIcon("src/img.png");<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JLabel logo = new JLabel(img);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.setLayout(new GridLayout(2,1));<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.add(logo);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.add(l);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;public void clock_run() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;while(true) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Calendar now = Calendar.getInstance();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;h = now.get(Calendar.HOUR_OF_DAY);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;m = now.get(Calendar.MINUTE);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s = now.get(Calendar.SECOND);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;try {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread.sleep(250);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.setText(String.format("%02d:%02d:%02d", h, m, s));<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.setForeground(Color.decode(String.format("#%06x", r.nextInt(0xffffff + 1))));<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.setOpaque(true);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l.setBackground(Color.decode(String.format("#%06x", r.nextInt(0xffffff + 1))));<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.repaint();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}catch(InterruptedException ex) {
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread.currentThread().interrupt();<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                }
+
+            </div>
+                </p>
+            </section>
+            <section id="kontakt">
+                <h2>Kontakt</h2>
+                <p>Falls sie Fragen oder Anregungen haben können sie mich jederzeit über die Email <a href="mailto:bewerbung@korbinianmueller.de">bewerbung@korbinianmueller.de</a> erreichen</p>
             </section>
 
-            <footer>
-                <p>Kontaktiere mich unter: <a href="mailto:deine-email@example.com">deine-email@example.com</a></p>
-            </footer>
         </div>
-        <div id="navigation">
-
+        <div id="nav">
+            <footer>
+                <ul id="navigation">
+                    <li class="item"> <a href="#page">Zurück</a></li>
+                    <li class="item"> <a href="#me">Über mich</a></li>
+                    <li class="item"> <a href="#projekt">Projekte</a></li>
+                    <li class="item"> <a href="#fähigkeiten">Fähigkeiten</a></li>
+                    <li class="item"> <a href="#code">Code</a></li>
+                    <li class="item"> <a href="#kontakt">Kontakt</a></li>
+                </ul>
+            </footer>
         </div>
     </div>
 </body>
