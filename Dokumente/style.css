@@ -130,7 +130,7 @@ ul{
 
 .code{
     font-size: smaller;
-    font-family: Consolas, "Lucida Console";
+    font-family: Consolas, "Lucida Console", serif;
     line-height: 1rem;
     background-color: lightgrey;
     padding: 1rem;
