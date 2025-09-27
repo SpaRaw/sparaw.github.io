@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kreuzstich-Anleitung Generator</title>
+    <title>🧵 Grid Overlay Tool für Kreuzstich</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -43,11 +43,22 @@
             font-size: 1.1em;
         }
 
-        .controls {
+        .controls-section {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
             margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
 
@@ -72,6 +83,21 @@
             color: white;
         }
 
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -84,82 +110,145 @@
             box-shadow: none;
         }
 
-        #fileInput {
-            display: none;
+        .slider-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 200px;
         }
 
-        .main-content {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
+        .slider-control label {
+            color: #4a5568;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .slider-control input[type="range"] {
+            width: 180px;
+            margin: 5px 0;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-control input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 5px;
         }
 
         .image-section {
-            flex: 1;
-            min-width: 0;
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
         }
 
-        .legend-section {
-            width: 300px;
-            background: #f8f9fa;
+        .image-container {
+            position: relative;
+            display: inline-block;
+            border: 3px solid #4a5568;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .original-image {
+            display: block;
+            width: 600px;
+            height: auto;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .info-section {
+            background: #e2e8f0;
             border-radius: 10px;
             padding: 20px;
-            max-height: 80vh;
-            overflow-y: auto;
+            margin-top: 20px;
+            text-align: center;
         }
 
-        .legend-section h3 {
+        .info-section h3 {
             color: #4a5568;
             margin-bottom: 15px;
-            text-align: center;
             font-size: 1.3em;
         }
 
-        .color-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 8px;
-            background: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .color-square {
-            width: 30px;
-            height: 30px;
-            border: 2px solid #333;
-            margin-right: 10px;
-            border-radius: 3px;
-        }
-
-        .color-info {
-            flex: 1;
-        }
-
-        .color-code {
-            font-weight: bold;
-            font-size: 0.9em;
-            color: #4a5568;
-        }
-
-        .color-count {
-            font-size: 0.8em;
+        .info-section p {
             color: #718096;
+            margin-bottom: 10px;
+            line-height: 1.6;
         }
 
-        .canvas-container {
-            display: flex;
-            justify-content: center;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             margin-top: 20px;
         }
 
-        #pixelCanvas {
-            border: 3px solid #4a5568;
-            border-radius: 10px;
-            max-width: 100%;
-            height: auto;
-            cursor: crosshair;
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        #fileInput {
+            display: none;
         }
 
         .loading {
@@ -181,38 +270,23 @@
             80%, 100% { content: '....'; }
         }
 
-        .stats {
-            background: #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .stats h4 {
-            color: #4a5568;
-            margin-bottom: 10px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-        }
-
         @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
-            .legend-section {
+            .original-image {
                 width: 100%;
-                max-height: 400px;
+                max-width: 400px;
             }
             
-            .controls {
+            .controls-section {
                 flex-direction: column;
                 align-items: center;
+            }
+            
+            .slider-control {
+                min-width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             }
         }
     </style>
@@ -220,268 +294,374 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧵 Kreuzstich-Anleitung Generator</h1>
-            <p>Lade ein Bild hoch oder lass dich überraschen - erstelle pixelgenaue Kreuzstich-Vorlagen</p>
+            <h1>🧵 Grid Overlay Tool für Kreuzstich</h1>
+            <p>Legen Sie ein präzises Grid über Ihr Bild für perfekte Kreuzstich-Vorlagen</p>
         </div>
 
-        <div class="controls">
-            <input type="file" id="fileInput" accept="image/*">
-            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
-                📁 Bild hochladen
-            </button>
-            <button class="btn btn-secondary" id="randomBtn" onclick="loadRandomImage()">
-                🎲 Überrasch mich!
-            </button>
-        </div>
-
-        <div class="main-content">
-            <div class="image-section">
-                <div id="loadingMessage" class="loading" style="display: none;">
-                    Bild wird analysiert
-                </div>
-                <div class="canvas-container">
-                    <canvas id="pixelCanvas" style="display: none;"></canvas>
-                </div>
+        <div class="controls-section">
+            <div class="controls-row">
+                <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
+                <button class="btn btn-primary" onclick="loadImageFile()">
+                    📁 Bild laden
+                </button>
+                <button class="btn btn-secondary" onclick="toggleGrid()">
+                    📐 Grid ein/aus
+                </button>
+                <button class="btn btn-warning" id="wakeLockBtn" onclick="toggleWakeLock()">
+                    🔆 Bildschirm an lassen
+                </button>
             </div>
-
-            <div class="legend-section" id="legend" style="display: none;">
-                <h3>🎨 Farbpalette</h3>
-                <div id="colorList"></div>
-                <div class="stats" id="stats">
-                    <h4>📊 Statistiken</h4>
-                    <div class="stat-item">
-                        <span>Anzahl Farben:</span>
-                        <span id="colorCount">0</span>
+            
+            <div class="controls-row">
+                <div class="slider-control">
+                    <label>🔲 Grid-Größe</label>
+                    <input type="range" id="gridSizeSlider" min="2" max="50" value="10" oninput="updateGridSize(this.value)">
+                    <div class="slider-value">
+                        <span id="gridSizeValue">10</span> Pixel
                     </div>
-                    <div class="stat-item">
-                        <span>Bildgröße:</span>
-                        <span id="imageSize">0 x 0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span>Gesamte Stiche:</span>
-                        <span id="totalStitches">0</span>
+                </div>
+                
+                <div class="slider-control">
+                    <label>📦 Box-Größe</label>
+                    <input type="range" id="boxSizeSlider" min="5" max="50" value="10" oninput="updateBoxSize(this.value)">
+                    <div class="slider-value">
+                        <span id="boxSizeValue">10</span> x <span id="boxSizeValue2">10</span>
                     </div>
                 </div>
             </div>
+            
+            <div class="controls-row">
+                <button class="btn btn-info" onclick="changeGridSize(-1)">🔍- Feiner</button>
+                <button class="btn btn-info" onclick="changeGridSize(1)">🔍+ Gröber</button>
+                <button class="btn btn-success" onclick="saveImage()">💾 Bild speichern</button>
+            </div>
+        </div>
+
+        <div class="image-section">
+            <div class="image-container" id="imageContainer">
+                <canvas id="originalCanvas" class="original-image"></canvas>
+                <canvas id="gridCanvas" class="grid-overlay"></canvas>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>📊 Bild-Statistiken</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="imageWidth">-</div>
+                    <div class="stat-label">Breite (Pixel)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="imageHeight">-</div>
+                    <div class="stat-label">Höhe (Pixel)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="gridColumns">-</div>
+                    <div class="stat-label">Grid Spalten</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="gridRows">-</div>
+                    <div class="stat-label">Grid Zeilen</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="boxColumns">-</div>
+                    <div class="stat-label">Box Spalten</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="boxRows">-</div>
+                    <div class="stat-label">Box Zeilen</div>
+                </div>
+            </div>
+            
+            <p><strong>💡 Tipp:</strong> Das originale Bild bleibt unverändert. Nur das schwarze Grid wird darüber gelegt.</p>
+            <p><strong>📐 Grid:</strong> Feine Linien für einzelne Stiche | <strong>📦 Boxen:</strong> Dicke Linien für Bereiche</p>
         </div>
     </div>
 
     <script>
-        let colorMap = new Map();
-        let processedColors = [];
+        let gridSize = 10;
+        let boxSize = 10;
+        let gridVisible = true;
+        let originalImage = null;
+        let wakeLock = null;
 
-        // Zufällige Bilder (Placeholder URLs - in der Praxis würdest du eine richtige API verwenden)
-        const randomImages = [
-            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRkY2B0I0Ii8+CjxyZWN0IHg9IjEwIiB5PSIxMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjNEY0NkU1Ii8+CjxyZWN0IHg9IjE1IiB5PSIxNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjRkZGRkZGIi8+Cjwvc3ZnPgo=',
-            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjMzNCM0Y1Ii8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjE1IiBmaWxsPSIjRkZGRkZGIi8+CjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjgiIGZpbGw9IiNGRjY3QjQiLz4KPC9zdmc+Cg==',
-            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjMTBCOTgxIi8+Cjxwb2x5Z29uIHBvaW50cz0iMjAsMTAgMzAsMzAgMTAsMzAiIGZpbGw9IiNGRkZGRkYiLz4KPHBvbHlnb24gcG9pbnRzPSIyMCwxNSAyNSwyNSAxNSwyNSIgZmlsbD0iIzEwQjk4MSIvPgo8L3N2Zz4K'
-        ];
+        const originalCanvas = document.getElementById('originalCanvas');
+        const gridCanvas = document.getElementById('gridCanvas');
+        const originalCtx = originalCanvas.getContext('2d');
+        const gridCtx = gridCanvas.getContext('2d');
 
-        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                processImage(file);
-            }
-        }
-
-        function loadRandomImage() {
-            const randomImageUrl = randomImages[Math.floor(Math.random() * randomImages.length)];
+        // Erstelle ein Standard-Placeholder-Bild
+        function createPlaceholderImage() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 600;
+            canvas.height = 400;
             
-            // Erstelle ein temporäres Image-Element
-            const img = new Image();
-            img.onload = function() {
-                // Konvertiere das Bild zu einem Blob und dann zu einer Datei
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                
-                canvas.toBlob(function(blob) {
-                    const file = new File([blob], 'random-image.png', {type: 'image/png'});
-                    processImage(file);
-                });
-            };
-            img.src = randomImageUrl;
+            // Erstelle ein schönes Gradient als Platzhalter
+            const gradient = ctx.createLinearGradient(0, 0, 600, 400);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.3, '#87CEEB');
+            gradient.addColorStop(0.7, '#ADD8E6');
+            gradient.addColorStop(1, '#764ba2');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 600, 400);
+            
+            // Füge dekorative Elemente hinzu
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * 600;
+                const y = Math.random() * 400;
+                const size = Math.random() * 30 + 10;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Füge Text hinzu
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 4;
+            ctx.fillText('🧵 Laden Sie Ihr Kreuzstich-Bild hoch', 300, 180);
+            
+            ctx.font = '18px Arial';
+            ctx.fillText('um das präzise Grid zu sehen', 300, 220);
+            
+            return canvas.toDataURL();
         }
 
-        function processImage(file) {
-            showLoading(true);
-            resetData();
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
+        function initializeCanvas() {
+            if (!originalImage) {
                 const img = new Image();
                 img.onload = function() {
-                    analyzeImage(img);
+                    setupCanvases(this);
+                    drawGrid();
+                    updateStats();
                 };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+                img.src = createPlaceholderImage();
+            }
         }
 
-        function analyzeImage(img) {
-            const canvas = document.getElementById('pixelCanvas');
-            const ctx = canvas.getContext('2d');
+        function setupCanvases(img) {
+            const containerWidth = Math.min(600, window.innerWidth - 100);
+            const aspectRatio = img.height / img.width;
+            const containerHeight = containerWidth * aspectRatio;
+
+            // Setup original canvas
+            originalCanvas.width = img.width;
+            originalCanvas.height = img.height;
+            originalCanvas.style.width = containerWidth + 'px';
+            originalCanvas.style.height = containerHeight + 'px';
+            originalCtx.imageSmoothingEnabled = false;
+            originalCtx.drawImage(img, 0, 0);
+
+            // Setup grid canvas
+            gridCanvas.width = img.width;
+            gridCanvas.height = img.height;
+            gridCanvas.style.width = containerWidth + 'px';
+            gridCanvas.style.height = containerHeight + 'px';
+            gridCtx.imageSmoothingEnabled = false;
+
+            originalImage = img;
+        }
+
+        function drawGrid() {
+            if (!originalImage) return;
+
+            gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
             
-            // Begrenze die maximale Größe für bessere Performance
-            const maxSize = 100;
-            let width = img.width;
-            let height = img.height;
-            
-            if (width > maxSize || height > maxSize) {
-                const ratio = Math.min(maxSize / width, maxSize / height);
-                width = Math.floor(width * ratio);
-                height = Math.floor(height * ratio);
+            if (!gridVisible) return;
+
+            // Zeichne feine Grid-Linien
+            gridCtx.strokeStyle = '#000000';
+            gridCtx.lineWidth = 1;
+            gridCtx.globalAlpha = 0.6;
+
+            // Vertikale Grid-Linien
+            for (let x = 0; x <= gridCanvas.width; x += gridSize) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(x, 0);
+                gridCtx.lineTo(x, gridCanvas.height);
+                gridCtx.stroke();
             }
 
-            canvas.width = width;
-            canvas.height = height;
+            // Horizontale Grid-Linien
+            for (let y = 0; y <= gridCanvas.height; y += gridSize) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(0, y);
+                gridCtx.lineTo(gridCanvas.width, y);
+                gridCtx.stroke();
+            }
+
+            // Zeichne dickere Box-Linien
+            gridCtx.strokeStyle = '#000000';
+            gridCtx.lineWidth = 3;
+            gridCtx.globalAlpha = 0.9;
+
+            const boxPixelSize = boxSize * gridSize;
+
+            // Vertikale Box-Linien
+            for (let x = 0; x <= gridCanvas.width; x += boxPixelSize) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(x, 0);
+                gridCtx.lineTo(x, gridCanvas.height);
+                gridCtx.stroke();
+            }
+
+            // Horizontale Box-Linien
+            for (let y = 0; y <= gridCanvas.height; y += boxPixelSize) {
+                gridCtx.beginPath();
+                gridCtx.moveTo(0, y);
+                gridCtx.lineTo(gridCanvas.width, y);
+                gridCtx.stroke();
+            }
+        }
+
+        function toggleGrid() {
+            gridVisible = !gridVisible;
+            const btn = event.target;
+            btn.textContent = gridVisible ? '📐 Grid ein/aus' : '📐 Grid aktivieren';
+            btn.style.background = gridVisible ? 
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 
+                'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            drawGrid();
+        }
+
+        function changeGridSize(delta) {
+            gridSize = Math.max(2, Math.min(50, gridSize + delta));
+            document.getElementById('gridSizeSlider').value = gridSize;
+            document.getElementById('gridSizeValue').textContent = gridSize;
+            drawGrid();
+            updateStats();
+        }
+
+        function updateGridSize(value) {
+            gridSize = parseInt(value);
+            document.getElementById('gridSizeValue').textContent = gridSize;
+            drawGrid();
+            updateStats();
+        }
+
+        function updateBoxSize(value) {
+            boxSize = parseInt(value);
+            document.getElementById('boxSizeValue').textContent = boxSize;
+            document.getElementById('boxSizeValue2').textContent = boxSize;
+            drawGrid();
+            updateStats();
+        }
+
+        function loadImageFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        setupCanvases(this);
+                        drawGrid();
+                        updateStats();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveImage() {
+            if (!originalImage) {
+                alert('Bitte laden Sie zuerst ein Bild hoch!');
+                return;
+            }
+
+            // Erstelle ein temporäres Canvas mit beiden Layern
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
             
-            // Zeichne das Bild in der neuen Größe
-            ctx.drawImage(img, 0, 0, width, height);
+            tempCanvas.width = originalCanvas.width;
+            tempCanvas.height = originalCanvas.height;
             
-            // Hole die Pixeldaten
-            const imageData = ctx.getImageData(0, 0, width, height);
-            const data = imageData.data;
+            // Zeichne das Originalbild
+            tempCtx.drawImage(originalCanvas, 0, 0);
             
-            // Analysiere jeden Pixel
-            colorMap.clear();
+            // Zeichne das Grid darüber
+            tempCtx.drawImage(gridCanvas, 0, 0);
             
-            for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                const a = data[i + 3];
-                
-                if (a > 128) { // Nur sichtbare Pixel
-                    const colorKey = `rgb(${r},${g},${b})`;
+            // Speichere das Bild
+            const link = document.createElement('a');
+            link.download = 'kreuzstich-grid-vorlage.png';
+            link.href = tempCanvas.toDataURL();
+            link.click();
+        }
+
+        async function toggleWakeLock() {
+            const btn = document.getElementById('wakeLockBtn');
+            
+            if (!('wakeLock' in navigator)) {
+                alert('Wake Lock wird von diesem Browser nicht unterstützt');
+                return;
+            }
+
+            try {
+                if (wakeLock === null) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    btn.textContent = '🔆 Bildschirm aktiv';
+                    btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
                     
-                    if (colorMap.has(colorKey)) {
-                        colorMap.set(colorKey, colorMap.get(colorKey) + 1);
-                    } else {
-                        colorMap.set(colorKey, 1);
-                    }
+                    wakeLock.addEventListener('release', () => {
+                        btn.textContent = '🔆 Bildschirm an lassen';
+                        btn.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+                        wakeLock = null;
+                    });
+                } else {
+                    wakeLock.release();
+                    wakeLock = null;
                 }
-            }
-            
-            // Zeichne das Pixelraster
-            drawPixelGrid(width, height, data);
-            
-            // Erstelle die Legende
-            createColorLegend();
-            
-            // Zeige Canvas und Legende
-            canvas.style.display = 'block';
-            document.getElementById('legend').style.display = 'block';
-            showLoading(false);
-            
-            updateStats(width, height);
-        }
-
-        function drawPixelGrid(width, height, data) {
-            const canvas = document.getElementById('pixelCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Vergrößere das Canvas für bessere Sichtbarkeit
-            const pixelSize = Math.max(4, Math.min(20, 400 / Math.max(width, height)));
-            canvas.width = width * pixelSize;
-            canvas.height = height * pixelSize;
-            
-            let index = 0;
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    const r = data[index];
-                    const g = data[index + 1];
-                    const b = data[index + 2];
-                    const a = data[index + 3];
-                    
-                    if (a > 128) {
-                        // Zeichne den farbigen Pixel
-                        ctx.fillStyle = `rgb(${r},${g},${b})`;
-                        ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-                        
-                        // Zeichne den schwarzen Rahmen
-                        ctx.strokeStyle = '#000000';
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-                    }
-                    
-                    index += 4;
-                }
+            } catch (err) {
+                console.error('Wake Lock Fehler:', err);
+                alert('Bildschirm Wake Lock konnte nicht aktiviert werden');
             }
         }
 
-        function createColorLegend() {
-            // Sortiere Farben nach Häufigkeit
-            const sortedColors = Array.from(colorMap.entries())
-                .sort((a, b) => b[1] - a[1]);
-            
-            const colorList = document.getElementById('colorList');
-            colorList.innerHTML = '';
-            
-            sortedColors.forEach(([color, count], index) => {
-                const colorItem = document.createElement('div');
-                colorItem.className = 'color-item';
-                
-                const colorSquare = document.createElement('div');
-                colorSquare.className = 'color-square';
-                colorSquare.style.backgroundColor = color;
-                
-                const colorInfo = document.createElement('div');
-                colorInfo.className = 'color-info';
-                
-                const colorCode = document.createElement('div');
-                colorCode.className = 'color-code';
-                colorCode.textContent = color;
-                
-                const colorCount = document.createElement('div');
-                colorCount.className = 'color-count';
-                colorCount.textContent = `${count} Stiche (${((count / getTotalPixels()) * 100).toFixed(1)}%)`;
-                
-                colorInfo.appendChild(colorCode);
-                colorInfo.appendChild(colorCount);
-                
-                colorItem.appendChild(colorSquare);
-                colorItem.appendChild(colorInfo);
-                
-                colorList.appendChild(colorItem);
-            });
+        function updateStats() {
+            if (!originalImage) {
+                document.getElementById('imageWidth').textContent = '-';
+                document.getElementById('imageHeight').textContent = '-';
+                document.getElementById('gridColumns').textContent = '-';
+                document.getElementById('gridRows').textContent = '-';
+                document.getElementById('boxColumns').textContent = '-';
+                document.getElementById('boxRows').textContent = '-';
+                return;
+            }
+
+            const width = originalImage.width;
+            const height = originalImage.height;
+            const columns = Math.ceil(width / gridSize);
+            const rows = Math.ceil(height / gridSize);
+            const boxColumns = Math.ceil(columns / boxSize);
+            const boxRows = Math.ceil(rows / boxSize);
+
+            document.getElementById('imageWidth').textContent = width;
+            document.getElementById('imageHeight').textContent = height;
+            document.getElementById('gridColumns').textContent = columns;
+            document.getElementById('gridRows').textContent = rows;
+            document.getElementById('boxColumns').textContent = boxColumns;
+            document.getElementById('boxRows').textContent = boxRows;
         }
 
-        function getTotalPixels() {
-            return Array.from(colorMap.values()).reduce((sum, count) => sum + count, 0);
-        }
+        // Initialisiere beim Laden der Seite
+        initializeCanvas();
 
-        function updateStats(width, height) {
-            document.getElementById('colorCount').textContent = colorMap.size;
-            document.getElementById('imageSize').textContent = `${width} x ${height}`;
-            document.getElementById('totalStitches').textContent = getTotalPixels();
-        }
-
-        function showLoading(show) {
-            document.getElementById('loadingMessage').style.display = show ? 'block' : 'none';
-        }
-
-        function resetData() {
-            colorMap.clear();
-            processedColors = [];
-            document.getElementById('pixelCanvas').style.display = 'none';
-            document.getElementById('legend').style.display = 'none';
-            document.getElementById('colorList').innerHTML = '';
-        }
-
-        // Canvas Click Handler für Interaktivität
-        document.getElementById('pixelCanvas').addEventListener('click', function(event) {
-            const canvas = this;
-            const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            
-            // Hier könntest du zusätzliche Interaktionen hinzufügen
-            console.log(`Geklickt auf Position: ${x}, ${y}`);
+        // Cleanup beim Schließen der Seite
+        window.addEventListener('beforeunload', () => {
+            if (wakeLock !== null) {
+                wakeLock.release();
+            }
         });
     </script>
 </body>
