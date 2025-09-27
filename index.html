@@ -180,6 +180,7 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #fff;
         }
 
         .original-image {
@@ -270,6 +271,32 @@
             80%, 100% { content: '....'; }
         }
 
+        .palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            font-size: 0.9em;
+        }
+
+        .swatch-box {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+
         @media (max-width: 768px) {
             .original-image {
                 width: 100%;
@@ -304,7 +331,7 @@
                 <button class="btn btn-primary" onclick="loadImageFile()">
                     📁 Bild laden
                 </button>
-                <button class="btn btn-secondary" onclick="toggleGrid()">
+                <button class="btn btn-secondary" onclick="toggleGrid(this)">
                     📐 Grid ein/aus
                 </button>
                 <button class="btn btn-warning" id="wakeLockBtn" onclick="toggleWakeLock()">
@@ -314,16 +341,19 @@
             
             <div class="controls-row">
                 <div class="slider-control">
-                    <label>🔲 Grid-Größe</label>
-                    <input type="range" id="gridSizeSlider" min="2" max="50" value="10" oninput="updateGridSize(this.value)">
+                    <label>🔲 Grid-Größe (Pixel)</label>
+                    <input type="range" id="gridSizeSlider" min="1" max="50" value="10" oninput="updateGridSize(this.value)">
                     <div class="slider-value">
                         <span id="gridSizeValue">10</span> Pixel
+                    </div>
+                    <div style="margin-top:8px;">
+                        <button class="btn btn-info" onclick="autoDetectPixelSize()">🧠 Auto-Detect</button>
                     </div>
                 </div>
                 
                 <div class="slider-control">
                     <label>📦 Box-Größe</label>
-                    <input type="range" id="boxSizeSlider" min="5" max="50" value="10" oninput="updateBoxSize(this.value)">
+                    <input type="range" id="boxSizeSlider" min="1" max="50" value="10" oninput="updateBoxSize(this.value)">
                     <div class="slider-value">
                         <span id="boxSizeValue">10</span> x <span id="boxSizeValue2">10</span>
                     </div>
@@ -371,10 +401,19 @@
                     <div class="stat-value" id="boxRows">-</div>
                     <div class="stat-label">Box Zeilen</div>
                 </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="detectedPixelSize">-</div>
+                    <div class="stat-label">Erkannte Pixelgröße</div>
+                </div>
             </div>
             
             <p><strong>💡 Tipp:</strong> Das originale Bild bleibt unverändert. Nur das schwarze Grid wird darüber gelegt.</p>
             <p><strong>📐 Grid:</strong> Feine Linien für einzelne Stiche | <strong>📦 Boxen:</strong> Dicke Linien für Bereiche</p>
+
+            <h3 style="margin-top:18px">🎨 Verwendete Farben</h3>
+            <div id="palette" class="palette">
+                <!-- Farbfelder werden hier eingefügt -->
+            </div>
         </div>
     </div>
 
@@ -390,14 +429,20 @@
         const originalCtx = originalCanvas.getContext('2d');
         const gridCtx = gridCanvas.getContext('2d');
 
-        // Erstelle ein Standard-Placeholder-Bild
+        // --- Helper: convert RGBA to hex (ignore fully transparent pixels) ---
+        function rgbaToHex(r, g, b, a) {
+            if (a === 0) return null;
+            const toHex = (n) => ('0' + n.toString(16)).slice(-2).toUpperCase();
+            return '#' + toHex(r) + toHex(g) + toHex(b);
+        }
+
+        // --- Create placeholder image when nothing loaded ---
         function createPlaceholderImage() {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = 600;
             canvas.height = 400;
             
-            // Erstelle ein schönes Gradient als Platzhalter
             const gradient = ctx.createLinearGradient(0, 0, 600, 400);
             gradient.addColorStop(0, '#667eea');
             gradient.addColorStop(0.3, '#87CEEB');
@@ -407,7 +452,6 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, 600, 400);
             
-            // Füge dekorative Elemente hinzu
             ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
             for (let i = 0; i < 20; i++) {
                 const x = Math.random() * 600;
@@ -418,7 +462,6 @@
                 ctx.fill();
             }
             
-            // Füge Text hinzu
             ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
             ctx.font = 'bold 24px Arial';
             ctx.textAlign = 'center';
@@ -437,100 +480,231 @@
                 const img = new Image();
                 img.onload = function() {
                     setupCanvases(this);
+                    // Auto-detect pixel size for placeholder not necessary, keep default
                     drawGrid();
                     updateStats();
+                    computeAndShowPalette();
                 };
                 img.src = createPlaceholderImage();
             }
         }
 
         function setupCanvases(img) {
+            // Set canvas internal pixel size to image natural resolution
+            originalCanvas.width = img.width;
+            originalCanvas.height = img.height;
+            // Display size (CSS) to fit container but preserve pixelated rendering
             const containerWidth = Math.min(600, window.innerWidth - 100);
             const aspectRatio = img.height / img.width;
             const containerHeight = containerWidth * aspectRatio;
-
-            // Setup original canvas
-            originalCanvas.width = img.width;
-            originalCanvas.height = img.height;
             originalCanvas.style.width = containerWidth + 'px';
             originalCanvas.style.height = containerHeight + 'px';
             originalCtx.imageSmoothingEnabled = false;
-            originalCtx.drawImage(img, 0, 0);
+            originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+            originalCtx.drawImage(img, 0, 0, originalCanvas.width, originalCanvas.height);
 
-            // Setup grid canvas
+            // Grid canvas
             gridCanvas.width = img.width;
             gridCanvas.height = img.height;
             gridCanvas.style.width = containerWidth + 'px';
             gridCanvas.style.height = containerHeight + 'px';
             gridCtx.imageSmoothingEnabled = false;
+            gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
 
             originalImage = img;
         }
 
+        // --- Pixelgröße erkennen (Modus der Farblängen in X und Y) ---
+        function detectPixelSize() {
+            if (!originalImage) return 1;
+            const w = originalCanvas.width;
+            const h = originalCanvas.height;
+            // Safeguard for tiny images
+            if (w <= 1 || h <= 1) return 1;
+
+            const imgData = originalCtx.getImageData(0, 0, w, h).data;
+            const runs = [];
+
+            // Sample einige Zeilen (gleichmäßig verteilt)
+            const sampleRows = Math.min(40, h);
+            const rowStep = Math.max(1, Math.floor(h / sampleRows));
+
+            for (let sy = 0; sy < h; sy += rowStep) {
+                let lastColor = null;
+                let runLen = 0;
+                for (let x = 0; x < w; x++) {
+                    const idx = (sy * w + x) * 4;
+                    const hex = rgbaToHex(imgData[idx], imgData[idx+1], imgData[idx+2], imgData[idx+3]);
+                    // Transparent pixels: treat as unique marker to avoid merging runs across transparency
+                    const color = hex === null ? 'TRANSPARENT' : hex;
+                    if (lastColor === null) {
+                        lastColor = color;
+                        runLen = 1;
+                    } else if (color === lastColor) {
+                        runLen++;
+                    } else {
+                        // push runLen (ignore runs of length 0)
+                        if (runLen > 0) runs.push(runLen);
+                        lastColor = color;
+                        runLen = 1;
+                    }
+                }
+                if (runLen > 0) runs.push(runLen);
+            }
+
+            // Sample Spalten (vertikal) um X-Ergebnis abzugleichen
+            const runsV = [];
+            const sampleCols = Math.min(40, w);
+            const colStep = Math.max(1, Math.floor(w / sampleCols));
+            for (let sx = 0; sx < w; sx += colStep) {
+                let lastColor = null;
+                let runLen = 0;
+                for (let y = 0; y < h; y++) {
+                    const idx = (y * w + sx) * 4;
+                    const hex = rgbaToHex(imgData[idx], imgData[idx+1], imgData[idx+2], imgData[idx+3]);
+                    const color = hex === null ? 'TRANSPARENT' : hex;
+                    if (lastColor === null) {
+                        lastColor = color;
+                        runLen = 1;
+                    } else if (color === lastColor) {
+                        runLen++;
+                    } else {
+                        if (runLen > 0) runsV.push(runLen);
+                        lastColor = color;
+                        runLen = 1;
+                    }
+                }
+                if (runLen > 0) runsV.push(runLen);
+            }
+
+            function modeOfSmallRuns(arr) {
+                // Filter extremely large runs that might be background stretches; focus on <= 200
+                const filtered = arr.filter(n => n >= 1 && n <= 200);
+                if (filtered.length === 0) return 1;
+                const freq = {};
+                for (const n of filtered) freq[n] = (freq[n] || 0) + 1;
+                let best = filtered[0], bestCount = 0;
+                for (const k in freq) {
+                    const v = freq[k];
+                    if (v > bestCount) { bestCount = v; best = parseInt(k); }
+                }
+                return best;
+            }
+
+            const modeX = modeOfSmallRuns(runs);
+            const modeY = modeOfSmallRuns(runsV);
+            // Take the smaller of both (robuster gegen streckungen), but at least 1 and cap to 50
+            const detected = Math.max(1, Math.min(50, Math.round((modeX + modeY) / 2)));
+            return detected;
+        }
+
+        // --- Palette aus Bild berechnen und anzeigen ---
+        function computeAndShowPalette() {
+            const paletteEl = document.getElementById('palette');
+            paletteEl.innerHTML = '';
+            if (!originalImage) return;
+
+            const w = originalCanvas.width;
+            const h = originalCanvas.height;
+            const imgData = originalCtx.getImageData(0, 0, w, h).data;
+            const counts = Object.create(null);
+
+            for (let i = 0; i < imgData.length; i += 4) {
+                const a = imgData[i+3];
+                if (a === 0) continue; // skip transparent
+                const hex = rgbaToHex(imgData[i], imgData[i+1], imgData[i+2], a);
+                if (!hex) continue;
+                counts[hex] = (counts[hex] || 0) + 1;
+            }
+
+            // Sort by usage descending
+            const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+
+            // Erstelle Anzeige (Swatches + Count)
+            for (const [hex, count] of entries) {
+                const sw = document.createElement('div');
+                sw.className = 'color-swatch';
+                const box = document.createElement('div');
+                box.className = 'swatch-box';
+                box.style.background = hex;
+                const label = document.createElement('div');
+                label.textContent = `${hex} (${count})`;
+                sw.appendChild(box);
+                sw.appendChild(label);
+                paletteEl.appendChild(sw);
+            }
+        }
+
+        // --- Grid zeichnen: exakt auf Pixelgröße (gridSize) und nur innerhalb Bildgrenzen ---
         function drawGrid() {
             if (!originalImage) return;
 
             gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
-            
+
             if (!gridVisible) return;
 
-            // Zeichne feine Grid-Linien
+            // feine Grid-Linien
+            gridCtx.save();
             gridCtx.strokeStyle = '#000000';
             gridCtx.lineWidth = 1;
             gridCtx.globalAlpha = 0.6;
 
-            // Vertikale Grid-Linien
+            // Verticals
             for (let x = 0; x <= gridCanvas.width; x += gridSize) {
+                // Stelle sicher dass Linie innerhalb des Bildbereichs liegt (0..width)
+                if (x < 0 || x > gridCanvas.width) continue;
                 gridCtx.beginPath();
-                gridCtx.moveTo(x, 0);
-                gridCtx.lineTo(x, gridCanvas.height);
+                gridCtx.moveTo(x + 0.5, 0); // 0.5 für schärfere 1px Linien
+                gridCtx.lineTo(x + 0.5, gridCanvas.height);
                 gridCtx.stroke();
             }
 
-            // Horizontale Grid-Linien
+            // Horizontals
             for (let y = 0; y <= gridCanvas.height; y += gridSize) {
+                if (y < 0 || y > gridCanvas.height) continue;
                 gridCtx.beginPath();
-                gridCtx.moveTo(0, y);
-                gridCtx.lineTo(gridCanvas.width, y);
+                gridCtx.moveTo(0, y + 0.5);
+                gridCtx.lineTo(gridCanvas.width, y + 0.5);
                 gridCtx.stroke();
             }
 
-            // Zeichne dickere Box-Linien
+            // dickere Box-Linien (jede boxSize * gridSize)
             gridCtx.strokeStyle = '#000000';
             gridCtx.lineWidth = 3;
             gridCtx.globalAlpha = 0.9;
 
-            const boxPixelSize = boxSize * gridSize;
+            const boxPixelSize = Math.max(1, boxSize * gridSize);
 
-            // Vertikale Box-Linien
             for (let x = 0; x <= gridCanvas.width; x += boxPixelSize) {
+                if (x < 0 || x > gridCanvas.width) continue;
                 gridCtx.beginPath();
-                gridCtx.moveTo(x, 0);
-                gridCtx.lineTo(x, gridCanvas.height);
+                gridCtx.moveTo(x + 1.5, 0);
+                gridCtx.lineTo(x + 1.5, gridCanvas.height);
                 gridCtx.stroke();
             }
 
-            // Horizontale Box-Linien
             for (let y = 0; y <= gridCanvas.height; y += boxPixelSize) {
+                if (y < 0 || y > gridCanvas.height) continue;
                 gridCtx.beginPath();
-                gridCtx.moveTo(0, y);
-                gridCtx.lineTo(gridCanvas.width, y);
+                gridCtx.moveTo(0, y + 1.5);
+                gridCtx.lineTo(gridCanvas.width, y + 1.5);
                 gridCtx.stroke();
             }
+
+            gridCtx.restore();
         }
 
-        function toggleGrid() {
+        function toggleGrid(btnEl) {
             gridVisible = !gridVisible;
-            const btn = event.target;
-            btn.textContent = gridVisible ? '📐 Grid ein/aus' : '📐 Grid aktivieren';
-            btn.style.background = gridVisible ? 
+            btnEl.textContent = gridVisible ? '📐 Grid ein/aus' : '📐 Grid aktivieren';
+            btnEl.style.background = gridVisible ? 
                 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 
                 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
             drawGrid();
         }
 
         function changeGridSize(delta) {
-            gridSize = Math.max(2, Math.min(50, gridSize + delta));
+            gridSize = Math.max(1, Math.min(50, gridSize + delta));
             document.getElementById('gridSizeSlider').value = gridSize;
             document.getElementById('gridSizeValue').textContent = gridSize;
             drawGrid();
@@ -557,20 +731,45 @@
         }
 
         function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        setupCanvases(this);
-                        drawGrid();
-                        updateStats();
-                    };
-                    img.src = e.target.result;
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    setupCanvases(this);
+
+                    // auto-detect pixel size nach dem Rendern
+                    const detected = detectPixelSize();
+                    gridSize = detected;
+                    document.getElementById('gridSizeSlider').value = gridSize;
+                    document.getElementById('gridSizeValue').textContent = gridSize;
+                    document.getElementById('detectedPixelSize').textContent = gridSize;
+
+                    // Palette berechnen & rendern
+                    computeAndShowPalette();
+
+                    drawGrid();
+                    updateStats();
                 };
-                reader.readAsDataURL(file);
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Manuelle Auto-Detect Schaltfläche
+        function autoDetectPixelSize() {
+            if (!originalImage) {
+                alert('Bitte zuerst ein Bild laden.');
+                return;
             }
+            const detected = detectPixelSize();
+            gridSize = detected;
+            document.getElementById('gridSizeSlider').value = gridSize;
+            document.getElementById('gridSizeValue').textContent = gridSize;
+            document.getElementById('detectedPixelSize').textContent = gridSize;
+            drawGrid();
+            updateStats();
         }
 
         function saveImage() {
@@ -579,20 +778,17 @@
                 return;
             }
 
-            // Erstelle ein temporäres Canvas mit beiden Layern
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d');
             
             tempCanvas.width = originalCanvas.width;
             tempCanvas.height = originalCanvas.height;
             
-            // Zeichne das Originalbild
+            // Originalbild
             tempCtx.drawImage(originalCanvas, 0, 0);
-            
-            // Zeichne das Grid darüber
+            // Grid (bereits in selben Pixel-Koordinatensystem)
             tempCtx.drawImage(gridCanvas, 0, 0);
             
-            // Speichere das Bild
             const link = document.createElement('a');
             link.download = 'kreuzstich-grid-vorlage.png';
             link.href = tempCanvas.toDataURL();
@@ -636,11 +832,12 @@
                 document.getElementById('gridRows').textContent = '-';
                 document.getElementById('boxColumns').textContent = '-';
                 document.getElementById('boxRows').textContent = '-';
+                document.getElementById('detectedPixelSize').textContent = '-';
                 return;
             }
 
-            const width = originalImage.width;
-            const height = originalImage.height;
+            const width = originalCanvas.width;
+            const height = originalCanvas.height;
             const columns = Math.ceil(width / gridSize);
             const rows = Math.ceil(height / gridSize);
             const boxColumns = Math.ceil(columns / boxSize);
@@ -652,6 +849,7 @@
             document.getElementById('gridRows').textContent = rows;
             document.getElementById('boxColumns').textContent = boxColumns;
             document.getElementById('boxRows').textContent = boxRows;
+            document.getElementById('detectedPixelSize').textContent = gridSize;
         }
 
         // Initialisiere beim Laden der Seite
@@ -662,6 +860,18 @@
             if (wakeLock !== null) {
                 wakeLock.release();
             }
+        });
+
+        // Responsiv: Beim Resize die CSS-Größe anpassen, Canvas intern bleibt gleich
+        window.addEventListener('resize', () => {
+            if (!originalImage) return;
+            const containerWidth = Math.min(600, window.innerWidth - 100);
+            const aspectRatio = originalCanvas.height / originalCanvas.width;
+            const containerHeight = containerWidth * aspectRatio;
+            originalCanvas.style.width = containerWidth + 'px';
+            originalCanvas.style.height = containerHeight + 'px';
+            gridCanvas.style.width = containerWidth + 'px';
+            gridCanvas.style.height = containerHeight + 'px';
         });
     </script>
 </body>
